@@ -16,6 +16,7 @@ public class Product {
     @Column(nullable = false)
     private Double price;
 
+    
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;

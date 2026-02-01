@@ -1,6 +1,9 @@
 package com.retail_inventory.entity;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +18,7 @@ public class Supplier {
     private String name;
 
     @OneToMany(mappedBy = "supplier")
+    @JsonIgnore 
     private List<Product> products;
 
     // --- Getters and Setters ---
