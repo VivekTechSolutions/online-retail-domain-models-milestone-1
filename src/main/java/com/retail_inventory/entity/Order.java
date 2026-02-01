@@ -1,6 +1,9 @@
 package com.retail_inventory.entity;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 /**
@@ -17,6 +20,7 @@ public class Order {
     // The product associated with this order
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore 
     private Product product;
 
     // Quantity of the product in this order

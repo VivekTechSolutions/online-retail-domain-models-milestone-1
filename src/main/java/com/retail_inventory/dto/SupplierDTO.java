@@ -1,8 +1,12 @@
 package com.retail_inventory.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class SupplierDTO {
 
     private Long id;
+    
+    @NotBlank(message = "Supplier name must not be blank")
     private String name;
 
     // --- Getters and Setters ---
