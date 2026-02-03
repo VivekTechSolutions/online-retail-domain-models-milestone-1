@@ -6,12 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public class ProductDTO {
+	private Long id;
 
-    private Long id;
     @NotBlank(message = "Product name must not be blank")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Price is required")
     @Positive(message = "Price must be greater than zero")
     private Double price;
 
@@ -22,7 +22,6 @@ public class ProductDTO {
     private Long supplierId;
 
     // --- Getters and Setters ---
-
     public Long getId() {
         return id;
     }
