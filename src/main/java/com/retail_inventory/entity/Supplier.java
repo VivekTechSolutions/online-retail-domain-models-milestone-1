@@ -1,9 +1,9 @@
 package com.retail_inventory.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -17,12 +17,23 @@ public class Supplier {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "supplier")
-    @JsonIgnore 
-    private List<Product> products;
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Product> products = new ArrayList<>();
+
+    // --- Constructors ---
+    public Supplier() { }
+
+    public Supplier(String name) {
+        this.name = name;
+    }
+
+    public Supplier(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     // --- Getters and Setters ---
-
     public Long getId() {
         return id;
     }
@@ -45,5 +56,25 @@ public class Supplier {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    // --- Utility Methods ---
+    public void addProduct(Product product) {
+        products.add(product);
+        product.setSupplier(this);
+    }
+
+    public void removeProduct(Product product) {
+        products.remove(product);
+        product.setSupplier(null);
+    }
+
+    @Override
+    public String toString() {
+        return "Supplier{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", productsCount=" + (products != null ? products.size() : 0) +
+                '}';
     }
 }

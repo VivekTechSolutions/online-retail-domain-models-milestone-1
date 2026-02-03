@@ -16,16 +16,24 @@ public class Product {
     @Column(nullable = false)
     private Double price;
 
-    
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
     @Column(nullable = false)
     private int stockQuantity;
 
-    // --- Getters and Setters ---
+    // --- Constructors ---
+    public Product() { }
 
+    public Product(String name, Double price, int stockQuantity, Supplier supplier) {
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.supplier = supplier;
+    }
+
+    // --- Getters and Setters ---
     public Long getId() {
         return id;
     }
@@ -64,5 +72,17 @@ public class Product {
 
     public void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
+    }
+
+    // --- Utility Methods ---
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", stockQuantity=" + stockQuantity +
+                ", supplier=" + (supplier != null ? supplier.getName() : "null") +
+                '}';
     }
 }
