@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import com.retail_inventory.entity.Supplier;
 import com.retail_inventory.service.SupplierService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/suppliers")
+@Tag(name="Supplier APIS",description = "Read,Update,Add,Delete")
 public class SupplierController {
 
     private final SupplierService supplierService;

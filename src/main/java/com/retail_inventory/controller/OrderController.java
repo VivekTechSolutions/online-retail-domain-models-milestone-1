@@ -10,8 +10,11 @@ import com.retail_inventory.dto.OrderDTO;
 import com.retail_inventory.entity.Order;
 import com.retail_inventory.service.OrderService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/orders")
+@Tag(name="Order APIS",description = "Read,Update,Add,Delete")
 public class OrderController {
 
     private final OrderService orderService;
