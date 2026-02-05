@@ -2,7 +2,11 @@ package com.retail_inventory.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.retail_inventory.dto.OrderDTO;
 import com.retail_inventory.entity.Order;
 import com.retail_inventory.entity.Product;
 import com.retail_inventory.exception.InsufficientStockException;
@@ -23,41 +27,49 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    public Order createOrder(Long productId, int quantity) {
+    @Transactional
+    public OrderDTO createOrder(OrderDTO orderDTO) {
+        Product product = productRepository.findById(orderDTO.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException(orderDTO.getProductId()));
 
-        // Find product
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
-
-        // Check stock
-        if (product.getStockQuantity() < quantity) {
-            throw new InsufficientStockException(product.getStockQuantity(), quantity);
+        if (product.getStockQuantity() < orderDTO.getQuantity()) {
+            throw new InsufficientStockException(product.getStockQuantity(), orderDTO.getQuantity());
         }
 
-        // Reduce stock
-        product.setStockQuantity(product.getStockQuantity() - quantity);
+        product.setStockQuantity(product.getStockQuantity() - orderDTO.getQuantity());
         productRepository.save(product);
 
-        // Create order using constructor
-        Order order = new Order(product, quantity, LocalDateTime.now());
+        Order order = new Order(product, orderDTO.getQuantity(), LocalDateTime.now());
+        Order savedOrder = orderRepository.save(order);
 
-        // Save and return
-        return orderRepository.save(order);
+        return mapToDTO(savedOrder);
     }
 
 
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id)
+    public OrderDTO getOrderById(Long id) {
+        Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
+        return mapToDTO(order);
     }
 
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     public void deleteOrder(Long id) {
         if (!orderRepository.existsById(id))
             throw new OrderNotFoundException(id);
         orderRepository.deleteById(id);
+    }
+
+    private OrderDTO mapToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setId(order.getId());
+        dto.setProductId(order.getProduct().getId());
+        dto.setQuantity(order.getQuantity());
+        dto.setOrderDate(order.getOrderDate());
+        return dto;
     }
 }

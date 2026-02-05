@@ -1,12 +1,16 @@
 package com.retail_inventory.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.retail_inventory.dto.ProductDTO;
 import com.retail_inventory.entity.Product;
 import com.retail_inventory.entity.Supplier;
+import com.retail_inventory.exception.ProductAlreadyExistsException;
 import com.retail_inventory.exception.ProductNotFoundException;
+import com.retail_inventory.exception.SupplierNotFoundException;
 import com.retail_inventory.repository.ProductRepository;
 import com.retail_inventory.repository.SupplierRepository;
 
@@ -14,16 +18,21 @@ import com.retail_inventory.repository.SupplierRepository;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final SupplierRepository supplierRepository; // needed for linking supplier
+    private final SupplierRepository supplierRepository;
 
     public ProductService(ProductRepository productRepository, SupplierRepository supplierRepository) {
         this.productRepository = productRepository;
         this.supplierRepository = supplierRepository;
     }
 
-    public Product createProduct(ProductDTO productDTO) {
+    // Create product with supplier validation and duplicate check
+    public ProductDTO createProduct(ProductDTO productDTO) {
         Supplier supplier = supplierRepository.findById(productDTO.getSupplierId())
-                .orElseThrow(() -> new RuntimeException("Supplier not found with ID " + productDTO.getSupplierId()));
+                .orElseThrow(() -> new SupplierNotFoundException(productDTO.getSupplierId()));
+
+        if (productRepository.existsByName(productDTO.getName())) {
+        	 throw new ProductAlreadyExistsException(productDTO.getName());
+        }
 
         Product product = new Product();
         product.setName(productDTO.getName());
@@ -31,24 +40,25 @@ public class ProductService {
         product.setStockQuantity(productDTO.getStockQuantity());
         product.setSupplier(supplier);
 
-        return productRepository.save(product);
+        Product saved = productRepository.save(product);
+        return mapToDTO(saved);
     }
 
     public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID " + id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
         return mapToDTO(product);
     }
 
     public List<ProductDTO> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::mapToDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id))
-            throw new RuntimeException("Product not found with ID " + id);
+            throw new ProductNotFoundException(id);
         productRepository.deleteById(id);
     }
 
