@@ -100,3 +100,10 @@ Database Integrity:
 👀 View orders
 
 ❌ Delete orders
+
+📉 Automatically reduce stock quantity after an order
+
+✅ Conclusion
+----------------
+
+The Online Retail Inventory Management System provides a robust and scalable backend for managing suppliers, products, and orders in an online retail environment. By implementing RESTful APIs, validation, exception handling, and maintaining database integrity, the system ensures reliable inventory tracking and smooth order processing.
