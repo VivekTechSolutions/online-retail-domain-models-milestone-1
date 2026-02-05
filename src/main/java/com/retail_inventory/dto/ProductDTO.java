@@ -3,13 +3,19 @@ package com.retail_inventory.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 public class ProductDTO {
 	private Long id;
 
-    @NotBlank(message = "Product name must not be blank")
-    private String name;
+	@NotBlank(message = "Product name must not be blank") 
+	@Pattern(
+	    regexp = "^[A-Za-z][A-Za-z0-9 ]*$", 
+	    message = "Name must start with a letter and can contain letters, numbers, and spaces"
+	)
+	private String name;
+
 
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be greater than zero")

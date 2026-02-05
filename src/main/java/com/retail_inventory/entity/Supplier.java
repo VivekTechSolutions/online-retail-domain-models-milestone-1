@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "suppliers")
@@ -15,6 +16,10 @@ public class Supplier {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Pattern(
+    	    regexp = "^[A-Za-z][A-Za-z0-9 ]*$",
+    	    message = "Name must start with a letter and can contain letters, numbers, and spaces"
+    	)
     private String name;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

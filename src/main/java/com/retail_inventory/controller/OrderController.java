@@ -7,14 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.retail_inventory.dto.OrderDTO;
-import com.retail_inventory.entity.Order;
 import com.retail_inventory.service.OrderService;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/orders")
-@Tag(name="Order APIS",description = "Read,Update,Add,Delete")
 public class OrderController {
 
     private final OrderService orderService;
@@ -23,28 +21,29 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    // Create order
     @PostMapping
-    public ResponseEntity<Order> createOrder(
-            @RequestBody OrderDTO orderDTO) {
-
-        Order order = orderService.createOrder(
-                orderDTO.getProductId(),
-                orderDTO.getQuantity()
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+    public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderDTO orderDTO) {
+        OrderDTO createdOrder = orderService.createOrder(orderDTO);
+        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getOrderById(id));
-    }
 
+    // Get all orders
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders());
+    public ResponseEntity<List<OrderDTO>> getAllOrders() {
+        List<OrderDTO> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 
+    // Get order by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
+        OrderDTO order = orderService.getOrderById(id);
+        return ResponseEntity.ok(order);
+    }
+
+    // Delete order
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);

@@ -1,4 +1,5 @@
 package com.retail_inventory.controller;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -6,15 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.retail_inventory.dto.ProductDTO;
-import com.retail_inventory.entity.Product;
 import com.retail_inventory.service.ProductService;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/products")
-@Tag(name="Product APIs", description = "Read, Update, Add, Delete")
 public class ProductController {
 
     private final ProductService productService;
@@ -23,23 +21,28 @@ public class ProductController {
         this.productService = productService;
     }
 
+    // Create product
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
-        Product product = productService.createProduct(productDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.getProductById(product.getId()));
+        ProductDTO created = productService.createProduct(productDTO);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
-    }
-
+    // Get all products
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+        List<ProductDTO> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
+    // Get product by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+        ProductDTO product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
+    }
+
+    // Delete product
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);

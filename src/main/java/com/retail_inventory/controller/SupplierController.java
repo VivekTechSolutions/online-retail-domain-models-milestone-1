@@ -6,14 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.retail_inventory.entity.Supplier;
+import com.retail_inventory.dto.SupplierDTO;
 import com.retail_inventory.service.SupplierService;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/suppliers")
-@Tag(name="Supplier APIS",description = "Read,Update,Add,Delete")
 public class SupplierController {
 
     private final SupplierService supplierService;
@@ -22,23 +21,28 @@ public class SupplierController {
         this.supplierService = supplierService;
     }
 
+    // Create supplier
     @PostMapping
-    public ResponseEntity<Supplier> createSupplier(
-            @Valid @RequestBody Supplier supplier) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(supplierService.createSupplier(supplier));
+    public ResponseEntity<SupplierDTO> createSupplier(@Valid @RequestBody SupplierDTO supplierDTO) {
+        SupplierDTO created = supplierService.createSupplier(supplierDTO);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Supplier> getSupplierById(@PathVariable Long id) {
-        return ResponseEntity.ok(supplierService.getSupplierById(id));
-    }
-
+    // Get all suppliers
     @GetMapping
-    public ResponseEntity<List<Supplier>> getAllSuppliers() {
-        return ResponseEntity.ok(supplierService.getAllSuppliers());
+    public ResponseEntity<List<SupplierDTO>> getAllSuppliers() {
+        List<SupplierDTO> suppliers = supplierService.getAllSuppliers();
+        return ResponseEntity.ok(suppliers);
     }
 
+    // Get supplier by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<SupplierDTO> getSupplierById(@PathVariable Long id) {
+        SupplierDTO supplier = supplierService.getSupplierById(id);
+        return ResponseEntity.ok(supplier);
+    }
+
+    // Delete supplier
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSupplier(@PathVariable Long id) {
         supplierService.deleteSupplier(id);
